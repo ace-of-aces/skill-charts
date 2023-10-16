@@ -11,7 +11,7 @@ const Header = () => {
         <p className="italic">cuz i like charts</p>
       </div>
       <div className="">
-        <a href="https://github.com/ace-of-aces" target="_blank">
+        <a href="https://github.com/ace-of-aces/skill-charts" target="_blank">
           <Icon
             icon="mdi:github"
             className="h-8 w-8 hover:text-black hover:bg-white rounded-full"
