@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import mermaid, { MermaidConfig } from "mermaid";
 
 const DEFAULT_CONFIG: MermaidConfig = {
-  startOnLoad: true,
+  startOnLoad: false,
   theme: "default",
   logLevel: "fatal",
   securityLevel: "strict",
@@ -41,6 +41,7 @@ const DEFAULT_CONFIG: MermaidConfig = {
 };
 
 interface RemaidProps extends React.HTMLAttributes<HTMLDivElement> {
+  id: string;
   graph: string;
   config?: MermaidConfig;
   loading: React.ReactNode;
@@ -48,6 +49,8 @@ interface RemaidProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Remaid = (props: RemaidProps) => {
   const [fetchedChart, setFetchedChart] = useState("");
+
+  const mermaidRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchDiagram = async () => {
@@ -59,8 +62,17 @@ const Remaid = (props: RemaidProps) => {
   }, [props.graph]);
 
   useEffect(() => {
-    mermaid.initialize({ ...DEFAULT_CONFIG, ...props.config });
-  }, [props.config]);
+    async function render() {
+      mermaid.initialize({ ...DEFAULT_CONFIG, ...props.config });
+      const node = mermaidRef.current;
+      if (node && fetchedChart.length > 0) {
+        await mermaid.run({
+          nodes: [node],
+        });
+      }
+    }
+    render();
+  }, [props.config, props.id, fetchedChart]);
 
   useEffect(() => {
     if (props.graph && fetchedChart.length > 0) {
@@ -74,7 +86,7 @@ const Remaid = (props: RemaidProps) => {
   }
 
   return (
-    <div {...props} className={`mermaid ${props.className}`}>
+    <div {...props} id={props.id} className={`mermaid ${props.className}`} ref={mermaidRef}>
       {fetchedChart}
     </div>
   );
